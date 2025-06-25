@@ -106,7 +106,7 @@ filetype = st.segmented_control(
 if filetype:
     match filetype:
         case 'Excel':
-            file = st.file_uploader('Excel File', type=['xlsx'])
+            file = st.file_uploader('Excel File', type=['xlsx','xls','csv'])
         case 'Google Sheet':
             file = st.text_input('Google Sheet Link')
 
