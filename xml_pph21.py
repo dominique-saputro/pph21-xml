@@ -5,7 +5,7 @@ import calendar
 import datetime
 import os
 from streamlit_gsheets import GSheetsConnection
-from pages import calc_pph as pph
+import calc_pph as pph
 
 # functions
 def check_inputs(*data):
