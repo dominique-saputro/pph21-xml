@@ -5,7 +5,7 @@ import calendar
 import datetime
 import os
 from streamlit_gsheets import GSheetsConnection
-import calc_pph as pph
+from pages import calc_pph as pph
 
 # functions
 def check_inputs(*data):
@@ -106,7 +106,7 @@ filetype = st.segmented_control(
 if filetype:
     match filetype:
         case 'Excel':
-            file = st.file_uploader('Excel File', type=['xlsx','xls'])
+            file = st.file_uploader('Excel File', type=['xlsx'])
         case 'Google Sheet':
             file = st.text_input('Google Sheet Link')
 
@@ -190,7 +190,7 @@ if st.button('Run'):
                                 'TaxCertificate': cert,
                                 'TaxObjectCode': '21-100-01',
                                 'Gross': row['gross'],
-                                'Rate': row['tarif'],
+                                'Rate': row['tarif']*100,
                                 'IDPlaceOfBusinessActivity': nitku,
                                 'WithholdingDate': eod
                             }
@@ -209,7 +209,7 @@ if st.button('Run'):
                                 'TaxObjectCode': '21-100-35',
                                 'Gross': row['gross'],
                                 'Deemed': 100,
-                                'Rate': row['tarif'],
+                                'Rate': row['tarif']*100,
                                 'Document': 'PaymentProof',
                                 'DocumentNumber': 'Bukti Pembayaran',
                                 'DocumentDate': eod,
