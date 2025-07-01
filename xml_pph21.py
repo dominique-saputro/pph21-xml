@@ -190,7 +190,7 @@ if st.button('Run'):
                                 'TaxCertificate': cert,
                                 'TaxObjectCode': '21-100-01',
                                 'Gross': row['gross'],
-                                'Rate': row['tarif']*100,
+                                'Rate': round(row['tarif']*100,2),
                                 'IDPlaceOfBusinessActivity': nitku,
                                 'WithholdingDate': eod
                             }
@@ -209,7 +209,7 @@ if st.button('Run'):
                                 'TaxObjectCode': '21-100-35',
                                 'Gross': row['gross'],
                                 'Deemed': 100,
-                                'Rate': row['tarif']*100,
+                                'Rate': round(row['tarif']*100,2),
                                 'Document': 'PaymentProof',
                                 'DocumentNumber': 'Bukti Pembayaran',
                                 'DocumentDate': eod,
