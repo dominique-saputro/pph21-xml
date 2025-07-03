@@ -132,7 +132,7 @@ if st.button('Run'):
             with_nitku = False
             df.columns=['nik','nama','ptkp','x','gaji']
             df['nik'] = df['nik'].astype(str)
-            df['nitku'] = str(df['nik'] + "000000")
+            df['nitku']= df.iloc[:, 0].apply(lambda x: str(x)+"000000")
         df[['status','n']]= df['ptkp'].str.split('/',expand=True)
         
         # st.header('Before Calc')
