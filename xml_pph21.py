@@ -184,7 +184,7 @@ if st.button('Run'):
                                 'TaxPeriodYear': tahun,
                                 'CounterpartOpt': 'Resident',
                                 'CounterpartPassport': None,
-                                'CounterpartTin': row['nik'],
+                                'CounterpartTin': str(row['nik']),
                                 'StatusTaxExemption': row['ptkp'],
                                 'Position': 'Karyawan',
                                 'TaxCertificate': cert,
