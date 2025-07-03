@@ -131,8 +131,8 @@ if st.button('Run'):
         else:
             with_nitku = False
             df.columns=['nik','nama','ptkp','x','gaji']
-            df['nik'] = df['nik'].astype(str).str.zfill(16)
-            df['nitku'] = df['nik'] + "000000"
+            df['nik'] = df['nik'].astype(str)
+            df['nitku'] = str(df['nik'] + "000000")
         df[['status','n']]= df['ptkp'].str.split('/',expand=True)
         
         # st.header('Before Calc')
@@ -185,7 +185,7 @@ if st.button('Run'):
                                 'TaxPeriodYear': tahun,
                                 'CounterpartOpt': 'Resident',
                                 'CounterpartPassport': None,
-                                'CounterpartTin': str(row['nik']),
+                                'CounterpartTin': row['nik'],
                                 'StatusTaxExemption': row['ptkp'],
                                 'Position': 'Karyawan',
                                 'TaxCertificate': cert,
