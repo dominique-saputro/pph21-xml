@@ -1,2 +1,2 @@
-# pph21-xml
-Extract data from Excel or Google Sheet into PPh21 XML import data
+# 🎈 Coretax PPh21 Wizard
+Extract data from Excel or Google Sheet into a directly importable PPh21 XML data for Coretax
