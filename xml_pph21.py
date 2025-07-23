@@ -224,6 +224,7 @@ if st.button('Run'):
                 bp_list.append(bp21_item)
 
         # Create data exports
+        os.makedirs('temp', exist_ok=True)
         create_bp_bulk_xml(npwp, bp_list,bupot_value, 'temp/' + filename_xml)
         create_bp_excel(df, 'temp/' + filename_excel)
 
