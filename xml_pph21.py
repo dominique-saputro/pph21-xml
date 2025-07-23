@@ -107,6 +107,10 @@ if filetype:
     match filetype:
         case 'Excel':
             file = st.file_uploader('Excel File', type=['xlsx'])
+            if file:
+                xls = pd.ExcelFile(file)
+                sheet_names = xls.sheet_names
+                selected_sheet = st.selectbox('Pilih Sheet', sheet_names)
         case 'Google Sheet':
             file = st.text_input('Google Sheet Link')
 
@@ -118,12 +122,12 @@ if st.button('Run'):
             case 'Excel':
                 # Read selected sheet
                 xls = pd.ExcelFile(file)
-                sheet_names = xls.sheet_names
-                df = pd.read_excel(file,sheet_name=sheet_names[0])
+                sheet_to_read = selected_sheet if selected_sheet else xls.sheet_names[0]
+                df = pd.read_excel(file, sheet_name=sheet_to_read)
             case 'Google Sheet':
                 # Create a connection to Google Sheet
                 conn = st.connection("gsheets", type=GSheetsConnection)
-                df = conn.read(spreadsheet=file,ttl=0)
+                df = conn.read(spreadsheet=file, ttl=0)
         # Normalize data headers
         if len(df.columns) == 6:
             with_nitku = True
