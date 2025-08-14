@@ -148,7 +148,8 @@ if st.button('Run'):
             cert = 'DTP'
         else:
             cert = 'N/A'
-        eod = datetime.datetime(tahun, masa, calendar.monthrange(tahun, masa)[1])
+        last_day = calendar.monthrange(tahun, masa)[1]
+        eod = datetime.datetime(tahun, masa, last_day)
         eod = eod.strftime('%Y-%m-%d')
         filename_xml = bupot_value + '_' + datetime.datetime(tahun,masa,15).strftime('%Y%m')+ '_' + str(npwp) + '.xml'
         if gross:
