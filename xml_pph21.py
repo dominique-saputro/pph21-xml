@@ -135,7 +135,8 @@ if st.button('Run'):
         else:
             with_nitku = False
             df.columns=['nik','nama','ptkp','x','gaji']
-            # df['nik'] = df['nik'].str.zfill(16)
+            # df['nik'] = df['nik'].apply(lambda x: f"{int(float(x)):.0f}").str.zfill(16)
+            df['nik'] = str(df['nik'])
             df['nitku'] = df['nik'] + "000000"
         df[['status','n']]= df['ptkp'].str.split('/',expand=True)
         
