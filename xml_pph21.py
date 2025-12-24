@@ -6,22 +6,22 @@ import datetime
 import os
 from streamlit_gsheets import GSheetsConnection
 import calc_pph as pph
+import calc_tahunan as a1
 
 # functions
-def check_inputs(*data):
-    npwp = data[0]
-    file = data[7]
-
+def check_inputs(npwp,filetype):
     if not len(npwp) == 16:
         st.error("NPWP harus 16-digit.")
-        return False
+        st.stop()
+    if not filetype:
+        st.error("Data belum dipilih. Upload dari Excel / Google Sheet?")
+        st.stop()
     if not file and filetype == 'Excel':
         st.error("File Excel belum diupload.")
-        return False
+        st.stop()
     if not file and filetype == 'Google Sheet':
         st.error("Link Google Sheet kosong.")
-        return False
-    return True
+        st.stop()
 
 def create_bp_bulk_xml(tin, data_list, bp_type, filename):
     NSMAP = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
@@ -89,15 +89,16 @@ with col1:
     masa = st.number_input('Masa Pajak',value=month, format="%d")
 with col2:
     tahun = st.number_input('Tahun Pajak',value=year, format="%d")
-gross = {'Gross Up': True, 'Non Gross':False}[
-    st.radio('Perhitungan',['Gross Up','Non Gross'],horizontal=True)
-]
 tahunan = {'Bulanan':False,'Tahunan':True}[
     st.radio('Jenis',['Bulanan','Tahunan'],horizontal=True)
 ]
-bupot_value = {'Pegawai Tetap (BPMP)': 'bpmp', 'Selain Pegawai Tetap (BP21)': 'bp21'}[
-    st.radio('Bukti Potong', ['Pegawai Tetap (BPMP)', 'Selain Pegawai Tetap (BP21)'], horizontal=True)
-]
+if tahunan == False:
+    bupot_value = {'Pegawai Tetap (BPMP)': 'bpmp', 'Selain Pegawai Tetap (BP21)': 'bp21'}[
+        st.radio('Bukti Potong', ['Pegawai Tetap (BPMP)', 'Selain Pegawai Tetap (BP21)'], horizontal=True)
+    ]
+    gross = {'Gross Up': True, 'Non Gross':False}[
+        st.radio('Perhitungan',['Gross Up','Non Gross'],horizontal=True)
+    ]
 filetype = st.segmented_control(
             "Data",
             options=['Excel','Google Sheet'],
@@ -111,23 +112,21 @@ if filetype:
                 xls = pd.ExcelFile(file)
                 sheet_names = xls.sheet_names
                 selected_sheet = st.selectbox('Pilih Sheet', sheet_names)
-        case 'Google Sheet':
-            file = st.text_input('Google Sheet Link')
-
-if st.button('Run'):
-    # Only process data if form is submitted and inputs are non-empty
-    if check_inputs(npwp,nitku,masa,tahun,gross,tahunan,bupot_value,file):
-        # Extract data from File
-        match filetype:
-            case 'Excel':
-                # Read selected sheet
-                xls = pd.ExcelFile(file)
                 sheet_to_read = selected_sheet if selected_sheet else xls.sheet_names[0]
                 df = pd.read_excel(file, sheet_name=sheet_to_read)
-            case 'Google Sheet':
-                # Create a connection to Google Sheet
+        case 'Google Sheet':
+            file = st.text_input('Google Sheet Link')
+            if file:
                 conn = st.connection("gsheets", type=GSheetsConnection)
                 df = conn.read(spreadsheet=file, ttl=0)
+
+if st.button('Run'):
+    check_inputs(npwp,filetype)
+    # Only process data if form is submitted and inputs are non-empty
+    if tahunan:
+        a1.do_tahunan(npwp,nitku,df)
+              
+    else:
         # Normalize data headers
         if len(df.columns) == 6:
             with_nitku = True
@@ -238,8 +237,6 @@ if st.button('Run'):
         with col2:
             with open('temp/' + filename_excel, "rb") as f:
                 st.download_button("📊 Download XLSX", f, filename_excel, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    else:
-        st.error('Oops! Something went wrong 😵‍💫')
 
     # Delete created XML and Excel files
     del_path = 'temp/'
