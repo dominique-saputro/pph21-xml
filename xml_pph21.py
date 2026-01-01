@@ -96,12 +96,12 @@ with col2:
 tahunan = {'Bulanan':False,'Tahunan':True}[
     st.radio('Jenis',['Bulanan','Tahunan'],horizontal=True)
 ]
+gross = {'Gross Up': True, 'Non Gross':False}[
+    st.radio('Perhitungan',['Gross Up','Non Gross'],horizontal=True)
+]
 if tahunan == False:
     bupot_value = {'Pegawai Tetap (BPMP)': 'bpmp', 'Selain Pegawai Tetap (BP21)': 'bp21'}[
         st.radio('Bukti Potong', ['Pegawai Tetap (BPMP)', 'Selain Pegawai Tetap (BP21)'], horizontal=True)
-    ]
-    gross = {'Gross Up': True, 'Non Gross':False}[
-        st.radio('Perhitungan',['Gross Up','Non Gross'],horizontal=True)
     ]
 filetype = st.segmented_control(
             "Data",
@@ -128,7 +128,7 @@ if st.button('Run'):
     check_inputs(npwp,filetype)
     # Only process data if form is submitted and inputs are non-empty
     if tahunan:
-        a1.do_tahunan(npwp,nitku,df)
+        a1.do_tahunan(npwp,nitku,gross,df)
               
     else:
         # Normalize data headers

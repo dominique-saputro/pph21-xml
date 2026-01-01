@@ -16,6 +16,30 @@ ptkp = {
     "K/3" : 72000000,
 }
 
+def calc_ng(df):
+    pph_list = []
+    cap1 =   60000000
+    cap2 =  250000000
+    cap3 =  500000000
+    cap4 = 5000000000
+    
+    for pkp in df['pkp']:
+        if (pkp < 0):
+            pph = 0
+        elif (pkp <= cap1):
+            pph = pkp * 0.05
+        elif (pkp <= cap2):
+            pph = 3000000+((pkp-cap1) * 0.15)
+        elif (pkp <= cap3):
+            pph = 31500000 +((pkp-cap2) * 0.25)
+        elif (pkp <= cap4):
+            pph = 94000000 +((pkp-cap3) * 0.3)
+        elif (pkp > cap4):
+            pph = 1444000000 +((pkp-cap4) * 0.35)
+    
+        pph_list.append(pph)
+    return pph_list
+
 def create_a1_bulk_xml(tin, data_list, filename):
     NSMAP = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
     
@@ -50,8 +74,11 @@ def create_a1_bulk_xml(tin, data_list, filename):
     tree = etree.ElementTree(root)
     tree.write(filename, pretty_print=True, xml_declaration=True, encoding='UTF-8')
 
-def create_a1_excel(entries, filename):
-    needed = ['masa_awal','masa_akhir','nik','ptkp','bruto','jabatan','pengurang','netto','ptkp_num','pkp','pph','estimasi_bayar']
+def create_a1_excel(entries, filename, gross):
+    if gross:
+        needed = ['masa_awal','masa_akhir','nik','ptkp','gaji','tunj_gross','penambah','bruto','jabatan','pengurang','netto','ptkp_num','pkp','pph','estimasi_bayar']
+    else:
+        needed = ['masa_awal','masa_akhir','nik','ptkp','gaji','tunj_pph','penambah','bruto','jabatan','pengurang','netto','ptkp_num','pkp','pph','estimasi_bayar']
     entries['estimasi_bayar'] = np.where(
         entries['pph'] > 0,
         entries['pph'] - entries['tunj_pph'],
@@ -68,10 +95,10 @@ def create_a1_excel(entries, filename):
     df.to_excel(filename, index=False) 
     st.dataframe(df)
 
-def do_tahunan(npwp,nitku,df):
+def do_tahunan(npwp,nitku,gross,df):
     # Prepare common variables
     today = datetime.datetime.now()
-    year = today.year
+    year = today.year - 1
     eod = str(year) + '-12-31'
     if npwp == '0010001519052000':
         cert = 'DTP'
@@ -91,7 +118,9 @@ def do_tahunan(npwp,nitku,df):
     )
     
     bruto_cols = ['gaji','tunj_pph','extra1','extra2','extra3','extra4','extra5']
-    df['bruto'] = df[bruto_cols].sum(axis=1)    
+    df['bruto'] = df[bruto_cols].sum(axis=1)   
+    penambah_cols = ['extra1','extra2','extra3','extra4','extra5']
+    df['penambah'] = df[penambah_cols].sum(axis=1) 
     
     df['masa_n'] = df['masa_akhir'] - df['masa_awal'] + 1
 
@@ -103,34 +132,27 @@ def do_tahunan(npwp,nitku,df):
     df['netto'] = df['bruto'] - df['minus1'] - df['minus2'] - df['jabatan']
     df['pengurang'] = (df['minus1'] + df['minus2']) * -1
     df['ptkp_num'] = df['ptkp'].map(ptkp)
-    df['pkp'] = round((df['netto'] - df['ptkp_num']) / 1000 ,0) * 1000
+    pkp_raw = (df['netto'] - df['ptkp_num']).clip(lower=0)
+    df['pkp'] = (pkp_raw // 1000) * 1000
     
     #Calculate Taxes
-    pph_list = []
-    
-    cap1 =   60000000
-    cap2 =  250000000
-    cap3 =  500000000
-    cap4 = 5000000000
-    
-    for index,row in df.iterrows():
-        if (row['pkp'] < 0):
-            pph = 0
-        elif (row['pkp'] <= cap1):
-            pph = row['pkp'] * 0.05
-        elif (row['pkp'] <= cap2):
-            pph = 3000000+((row['pkp']-cap1) * 0.15)
-        elif (row['pkp'] <= cap3):
-            pph = 31500000 +((row['pkp']-cap2) * 0.25)
-        elif (row['pkp'] <= cap4):
-            pph = 94000000 +((row['pkp']-cap3) * 0.3)
-        elif (row['pkp'] > cap4):
-            pph = 1444000000 +((row['pkp']-cap4) * 0.35)
-       
-        pph_list.append(pph)    
-            
+    df['pph'] = calc_ng(df) 
+    if gross:
+        df['tunj_gross'] = 0
+        while not df['pph'].equals(df['tunj_gross']):
+            df['tunj_gross'] = df['pph']      
+            bruto_cols = ['gaji','tunj_gross','extra1','extra2','extra3','extra4','extra5']
+            df['bruto'] = df[bruto_cols].sum(axis=1)   
+            df['jabatan'] = np.minimum(
+                df['bruto'] * 0.05,
+                500_000 * df['masa_n']
+            )
+            df['netto'] = df['bruto'] - df['minus1'] - df['minus2'] - df['jabatan']
+            pkp_raw = (df['netto'] - df['ptkp_num']).clip(lower=0)
+            df['pkp'] = (pkp_raw // 1000) * 1000
+            df['pph'] = calc_ng(df)
+                
     #Create A1 Bupot data
-    df['pph'] = pph_list
     a1_list = []
     for index,row in df.iterrows():
         # --------------------------------- What is the DTP limit for tahunan???
@@ -142,6 +164,7 @@ def do_tahunan(npwp,nitku,df):
         else:
             status = 'PartialYear'
             masa_n = 0
+            
         a1_item = {
                     'WorkForSecondEmployer': 'No',
                     'TaxPeriodMonthStart': row['masa_awal'],
@@ -156,7 +179,7 @@ def do_tahunan(npwp,nitku,df):
                     'TaxObjectCode': '21-100-01',
                     'NumberOfMonths': masa_n,
                     'SalaryPensionJhtTht': row['gaji'],
-                    'GrossUpOpt': 'No',
+                    'GrossUpOpt': 'Yes' if gross else 'No',
                     'IncomeTaxBenefit': row['tunj_pph'],
                     'OtherBenefit': row['extra1'],
                     'Honorarium': row['extra2'],
@@ -177,7 +200,7 @@ def do_tahunan(npwp,nitku,df):
     # Create data exports
     os.makedirs('temp', exist_ok=True)
     create_a1_bulk_xml(npwp, a1_list, 'temp/' + filename_xml)
-    create_a1_excel(df, 'temp/' + filename_excel)
+    create_a1_excel(df, 'temp/' + filename_excel,gross)
 
     # Download Buttons
     col1,col2 = st.columns(2)
