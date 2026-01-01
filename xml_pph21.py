@@ -74,6 +74,8 @@ def create_bp_excel(entries, filename):
 today = datetime.datetime.now()
 if today.day < 25:
     month = today.month -1
+    if month == 0:
+        month = 12
 else:
     month = today.month
 year = today.year
