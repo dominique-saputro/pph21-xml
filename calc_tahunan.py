@@ -156,7 +156,7 @@ def do_tahunan(npwp,nitku,gross,df):
     a1_list = []
     for index,row in df.iterrows():
         # --------------------------------- What is the DTP limit for tahunan???
-        if cert == 'DTP' and row['gaji'] > 8000000 * 12:
+        if cert == 'DTP' and row['gaji'] > 130000000:
             cert = 'N/A'
         if row['masa_awal'] == 1 and row['masa_akhir'] == 12:
             status = 'FullYear'
