@@ -187,7 +187,7 @@ if st.button('Run'):
         bp_list = []
         if bupot_value == 'bpmp':
             for index,row in df.iterrows():
-                if cert == 'DTP' and row['gaji'] > 10000000:
+                if npwp == '0010001519052000' and row['gaji'] > 10000000:
                     cert = 'N/A'
                 bpmp_item = { 
                                 'TaxPeriodMonth': masa,
@@ -207,7 +207,7 @@ if st.button('Run'):
                 bp_list.append(bpmp_item)
         else:
             for index,row in df.iterrows():
-                if cert == 'DTP' and row['gaji'] > 10000000:
+                if npwp == '0010001519052000' and row['gaji'] > 10000000:
                     cert = 'N/A'
                 bp21_item = { 
                                 'TaxPeriodMonth': masa,
