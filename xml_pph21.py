@@ -187,7 +187,7 @@ if st.button('Run'):
         bp_list = []
         if bupot_value == 'bpmp':
             for index,row in df.iterrows():
-                if cert == 'DTP' and row['gaji'] > 8000000:
+                if cert == 'DTP' and row['gaji'] > 10000000:
                     cert = 'N/A'
                 bpmp_item = { 
                                 'TaxPeriodMonth': masa,
