@@ -147,10 +147,6 @@ if st.button('Run'):
         # st.dataframe(df)
         
         # Prepare common variables
-        if npwp == '0010001519052000':
-            cert = 'DTP'
-        else:
-            cert = 'N/A'
         last_day = calendar.monthrange(tahun, masa)[1]
         eod = datetime.datetime(tahun, masa, last_day)
         eod = eod.strftime('%Y-%m-%d')
@@ -187,7 +183,9 @@ if st.button('Run'):
         bp_list = []
         if bupot_value == 'bpmp':
             for index,row in df.iterrows():
-                if npwp == '0010001519052000' and row['gaji'] > 10000000:
+                if npwp == '0010001519052000' and row['gaji'] < 10000000:
+                    cert = 'DTP'
+                else:
                     cert = 'N/A'
                 bpmp_item = { 
                                 'TaxPeriodMonth': masa,
@@ -207,7 +205,9 @@ if st.button('Run'):
                 bp_list.append(bpmp_item)
         else:
             for index,row in df.iterrows():
-                if npwp == '0010001519052000' and row['gaji'] > 10000000:
+                if npwp == '0010001519052000' and row['gaji'] < 10000000:
+                    cert = 'DTP'
+                else:
                     cert = 'N/A'
                 bp21_item = { 
                                 'TaxPeriodMonth': masa,
