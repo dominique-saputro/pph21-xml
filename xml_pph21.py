@@ -128,7 +128,7 @@ if st.button('Run'):
     check_inputs(npwp,filetype)
     # Only process data if form is submitted and inputs are non-empty
     if tahunan:
-        a1.do_tahunan(npwp,nitku,gross,df)
+        a1.do_tahunan(npwp,nitku,gross,df,masa,tahun)
               
     else:
         # Normalize data headers

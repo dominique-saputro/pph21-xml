@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import numpy as np
 import datetime
+import calendar
 from lxml import etree
 
 ptkp = {
@@ -95,11 +96,11 @@ def create_a1_excel(entries, filename, gross):
     df.to_excel(filename, index=False) 
     st.dataframe(df)
 
-def do_tahunan(npwp,nitku,gross,df):
+def do_tahunan(npwp,nitku,gross,df,masa,tahun):
     # Prepare common variables
-    today = datetime.datetime.now()
-    year = today.year - 1
-    eod = str(year) + '-12-31'
+    last_day = calendar.monthrange(tahun, masa)[1]
+    eod = datetime.datetime(tahun, masa, last_day)
+    eod = eod.strftime('%Y-%m-%d')
     if npwp == '0010001519052000':
         cert = 'DTP'
     else:
