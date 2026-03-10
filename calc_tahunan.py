@@ -170,7 +170,7 @@ def do_tahunan(npwp,nitku,gross,df,masa,tahun):
                     'WorkForSecondEmployer': 'No',
                     'TaxPeriodMonthStart': row['masa_awal'],
                     'TaxPeriodMonthEnd': row['masa_akhir'],
-                    'TaxPeriodYear': year,
+                    'TaxPeriodYear': tahun,
                     'CounterpartOpt': 'Resident',
                     'CounterpartPassport': '',
                     'CounterpartTin': row['nik'],
