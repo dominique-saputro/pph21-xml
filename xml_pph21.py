@@ -5,8 +5,8 @@ import calendar
 import datetime
 import os
 from streamlit_gsheets import GSheetsConnection
-import calc_pph as pph
-import calc_tahunan as a1
+import utils.calc_pph as pph
+import utils.calc_tahunan as a1
 
 # functions
 def check_inputs(npwp,filetype):
@@ -83,7 +83,11 @@ if month == 0:
     year = year - 1
 
 # form contents
-st.title('Convert Excel to XML - PPh21')
+# st.set_page_config(
+#     page_title="Perhitungan PPh21 Coretax",
+#     page_icon="📊",
+# )
+st.title('Converter PPh21 Coretax')
 npwp = st.text_input('NPWP (16 Digit)',max_chars=16)
 if npwp:
     nitku_var = (str(npwp)+"000000",str(npwp)+"000001",str(npwp)+"000002",str(npwp)+"000003")
@@ -152,9 +156,9 @@ if st.button('Run'):
         eod = eod.strftime('%Y-%m-%d')
         filename_xml = bupot_value + '_' + datetime.datetime(tahun,masa,15).strftime('%Y%m')+ '_' + str(npwp) + '.xml'
         if gross:
-            filename_excel = 'grossup_' + datetime.datetime(tahun,masa,15).strftime('%Y%m')+ '_' + str(npwp) + '.xlsx'
+            filename_excel = 'grossup_' + bupot_value + datetime.datetime(tahun,masa,15).strftime('%Y%m')+ '_' + str(npwp) + '.xlsx'
         else:
-            filename_excel = 'nongross_' + datetime.datetime(tahun,masa,15).strftime('%Y%m')+ '_' + str(npwp) + '.xlsx'
+            filename_excel = 'nongross_' + bupot_value + datetime.datetime(tahun,masa,15).strftime('%Y%m')+ '_' + str(npwp) + '.xlsx'
         # Calculate taxes
         tarif_list = []
         gross_list = []

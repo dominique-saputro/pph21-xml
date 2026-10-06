@@ -218,6 +218,30 @@ def calc_grossup(income, tarif, bracket_table):
     return new_tarif, grossup
 
     
+def get_table(s,n):
+    """
+    Determines which table will be chosen based on the given status and n.
+
+    Parameters:
+        s (str): Martial status
+        n (int): Number of dependencies
+
+    Returns:
+        list:  Each element is [range_bottom, range_top, rate]
+    """
+    if s == "tk":
+        if n in [0, 1]:
+            table = 'A'
+        elif n in [2, 3]:
+            table = 'B'
+    else:
+        if n == 0:
+            table = 'A'
+        elif n in [1, 2]:
+            table = 'B'
+        elif n == 3:
+            table = 'C'
+    return table
 
 
 

@@ -212,3 +212,29 @@ def do_tahunan(npwp,nitku,gross,df,masa,tahun):
         with open('temp/' + filename_excel, "rb") as f:
             st.download_button("📊 Download XLSX", f, filename_excel, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     
+    
+def calc_ng_one(pkp):
+    cap1 =   60000000
+    cap2 =  250000000
+    cap3 =  500000000
+    cap4 = 5000000000
+    
+    if (pkp <= 0):
+        pph = 0
+        tarif = 0
+    elif (pkp <= cap1):
+        pph = pkp * 0.05
+        tarif = 0.05
+    elif (pkp <= cap2):
+        pph = 3000000+((pkp-cap1) * 0.15)
+        tarif = 0.15
+    elif (pkp <= cap3):
+        pph = 31500000 +((pkp-cap2) * 0.25)
+        tarif = 0.25
+    elif (pkp <= cap4):
+        pph = 94000000 +((pkp-cap3) * 0.3)
+        tarif = 0.3
+    elif (pkp > cap4):
+        pph = 1444000000 +((pkp-cap4) * 0.35)
+        tarif = 0.35
+    return pph,tarif
