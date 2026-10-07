@@ -12,8 +12,9 @@ FORMAT_DIR = BASE_DIR / "format"
 format_bulanan = (FORMAT_DIR / "Format Bulanan Tetap & Tidak Tetap.xlsx").read_bytes()
 format_tahunan = (FORMAT_DIR / "Format Tahunan A1.xlsx").read_bytes()
 
+st.sidebar.write("Download Format Upload")
 st.sidebar.download_button(
-    label="Download Format Bulanan Tetap & Tidak Tetap",
+    label="Bulanan",
     data=format_bulanan,
     file_name="Format Bulanan Tetap & Tidak Tetap.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -21,7 +22,7 @@ st.sidebar.download_button(
 )
 
 st.sidebar.download_button(
-    label="Download Format Tahunan A1",
+    label="Tahunan A1",
     data=format_tahunan,
     file_name="Format Tahunan A1.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
