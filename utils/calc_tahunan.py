@@ -101,10 +101,6 @@ def do_tahunan(npwp,nitku,gross,df,masa,tahun):
     last_day = calendar.monthrange(tahun, masa)[1]
     eod = datetime.datetime(tahun, masa, last_day)
     eod = eod.strftime('%Y-%m-%d')
-    if npwp == '0010001519052000':
-        cert = 'DTP'
-    else:
-        cert = 'N/A'
     filename_xml = 'a1_' + str(npwp) + '.xml'
     filename_excel = 'a1_' + str(npwp) + '.xlsx'
         
@@ -157,7 +153,9 @@ def do_tahunan(npwp,nitku,gross,df,masa,tahun):
     a1_list = []
     for index,row in df.iterrows():
         # --------------------------------- What is the DTP limit for tahunan???
-        if cert == 'DTP' and row['gaji'] > 130000000:
+        if npwp == '0010001519052000' and row['gaji'] <= 130000000:
+            cert = 'DTP'
+        else:
             cert = 'N/A'
         if row['masa_awal'] == 1 and row['masa_akhir'] == 12:
             status = 'FullYear'
